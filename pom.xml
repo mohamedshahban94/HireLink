@@ -12,7 +12,7 @@
 	<artifactId>HireLink</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>SignInPage</name>
-	<description>Demo project for SignIn Page</description>
+	<description>Demo project for HireLink Page</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -27,7 +27,9 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>21</java.version>
+			<java.version>17</java.version>
+			<maven.compiler.source>17</maven.compiler.source>
+			<maven.compiler.target>17</maven.compiler.target>
 	</properties>
 	<dependencies>
 <!--		<dependency>-->
