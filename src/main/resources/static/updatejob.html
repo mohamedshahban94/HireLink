@@ -110,7 +110,7 @@
     }
 
     // Fetch job details
-    fetch(`http://localhost:8080/jobs/${jobId}`, {
+    fetch(`https://hirelink-code.onrender.com/jobs/${jobId}`, {
       headers: {
         "Authorization": `Bearer ${token}`
       }
@@ -143,7 +143,7 @@
         link: document.getElementById("link").value.trim()
       };
 
-      fetch(`http://localhost:8080/jobs/${jobId}`, {
+      fetch(`https://hirelink-code.onrender.com/${jobId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
