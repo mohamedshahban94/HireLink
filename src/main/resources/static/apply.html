@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="briefcase.png" type="image/png">
+    <title>Apply for Job</title>
+    <style>
+        /* Reset & Base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #f0f0f0;
+            margin-bottom: 25px;
+        }
+
+
+    </style>
+</head>
+
+<body>
+<h1>Job Application Page</h1>
+<p>You are applying through the following link:</p>
+<a id="realLink" href="#" target="_blank">Click here to apply</a>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    const link = params.get("link");
+
+    if (link) {
+      const decodedLink = decodeURIComponent(link);
+      const anchor = document.getElementById("realLink");
+      anchor.href = decodedLink;
+      anchor.textContent = decodedLink;
+    } else {
+      document.getElementById("realLink").textContent = "No application link provided.";
+    }
+</script>
+</body>
+</html>
+

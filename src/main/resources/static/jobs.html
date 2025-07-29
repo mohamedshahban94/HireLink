@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="briefcase.png" type="image/png">
+    <title>Job Listings</title>
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+          background: linear-gradient(to right, #4facfe, #00f2fe);
+          min-height: 100vh;
+          padding: 20px;
+          color: #333;
+        }
+
+        .container {
+          max-width: 1100px;
+          margin: 0 auto;
+          background: rgba(255, 255, 255, 0.95);
+          padding: 30px;
+          border-radius: 16px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        h1 {
+          font-size: 2rem;
+          color: #0078ff;
+          text-align: center;
+          margin-bottom: 24px;
+        }
+
+        #addJobBtn {
+          display: none;
+          background: #0078ff;
+          color: white;
+          padding: 10px 18px;
+          border: none;
+          border-radius: 8px;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: background 0.3s ease;
+          margin-bottom: 20px;
+        }
+
+        #addJobBtn:hover {
+          background: #005dc7;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 10px;
+        }
+
+        th, td {
+          padding: 12px;
+          text-align: left;
+          border: 1px solid #ccc;
+        }
+
+        th {
+          background-color: #f2f2f2;
+        }
+
+        td a {
+          color: #0078ff;
+          text-decoration: none;
+        }
+
+        td a:hover {
+          text-decoration: underline;
+        }
+
+        button {
+          background: #0078ff;
+          color: white;
+          padding: 6px 12px;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          margin-right: 6px;
+        }
+
+        button:hover {
+          background: #005dc7;
+        }
+
+        .hidden {
+          display: none;
+        }
+
+        @media (max-width: 768px) {
+          .container {
+            padding: 20px;
+          }
+
+          h1 {
+            font-size: 1.6rem;
+          }
+
+          table {
+            font-size: 0.9rem;
+          }
+        }
+    </style>
+</head>
+<body>
+
+<button id="logoutBtn" style="float: right; margin: 10px;">Logout</button>
+<div class="container">
+<h1>Job Listings</h1>
+
+<button id="addJobBtn" style="display: none;" onclick="window.location.href='addjob.html'">
+    Add Job
+</button>
+
+<table id="jobTable">
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Company</th>
+        <th>Location</th>
+        <th>Role</th>
+        <th>Experience (yrs)</th>
+        <th>Link</th>
+        <th class="recruiter-only hidden">Action</th>
+    </tr>
+    </thead>
+    <tbody id="jobTableBody">
+    <!-- Jobs will be populated here -->
+    </tbody>
+</table>
+</div>
+<script>
+    const token = localStorage.getItem("jwt");
+
+    if (!token) {
+        alert("Unauthorized. Please login first.");
+        window.location.href = "login.html";
+    }
+
+  function parseJwt(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+  }
+
+  const payload = parseJwt(token);
+  const authorities = payload.authorities.map(a => a.authority);
+  console.log("Roles:", authorities);
+
+  if (authorities.includes("ROLE_RECRUITER")) {
+    document.getElementById("addJobBtn").style.display = "inline-block";
+    document.querySelectorAll(".recruiter-only").forEach(el => el.classList.remove("hidden"));
+  }
+
+    fetch("http://localhost:8080/jobs", {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Unauthorized or failed to load jobs.");
+        }
+        return response.json();
+    })
+    .then(data => {
+    const tbody = document.getElementById("jobTableBody");
+    data.forEach(job => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${new Date(job.date).toLocaleDateString()}</td>
+        <td>${job.company}</td>
+        <td>${job.location}</td>
+        <td>${job.role}</td>
+        <td>${job.experience}</td>
+        <td><a href="apply.html?link=${encodeURIComponent(job.link)}" target="_blank">Apply</a></td>
+      ${authorities.includes("ROLE_RECRUITER") ? `
+                    <td class="recruiter-only">
+                        <button onclick="editJob(${job.id})">Edit</button>
+                        <button onclick="deleteJob(${job.id})">Delete</button>
+                    </td>` : ''}
+      `;
+      tbody.appendChild(row);
+    });
+    })
+    .catch(error => {
+        alert(error.message);
+    });
+
+     function deleteJob(jobId) {
+        if (!confirm("Are you sure you want to delete this job?")) return;
+
+        fetch(`http://localhost:8080/jobs/${jobId}`, {
+            method: 'DELETE',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        })
+        .then(res => {
+            if (res.ok) {
+                alert("Job deleted.");
+                location.reload(); // refresh to update the list
+            } else {
+                alert("Failed to delete job.");
+            }
+        });
+    }
+
+    function editJob(jobId) {
+    window.location.href = `updatejob.html?id=${jobId}`;
+    }
+
+    document.getElementById("logoutBtn").addEventListener("click", function() {
+        localStorage.removeItem("jwt"); // Clear the token
+        window.location.href = "index.html"; // Redirect to home/login
+    });
+
+</script>
+
+</body>
+</html>

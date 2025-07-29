@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="icon" href="briefcase.png" type="image/png">
+    <title>Home</title>
+    <style>
+        /* Reset & Base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #023E8A;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #e63946;
+            margin-bottom: 25px;
+            background-color: #caf0f8;
+        }
+        .highlight {
+        font-weight: bold;
+        font-style: italic;
+        }
+
+        h3 {
+            margin: 15px 0 10px;
+            color: #023E8A;
+            font-weight: normal;
+        }
+
+        button {
+            background: #fff;
+            color: #0078ff;
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        button:hover {
+            background: #0078ff;
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            button {
+                width: 80%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Welcome to <span class="highlight">HireLink</span>, your job connection platform.</h1>
+
+<h3>Existing user</h3>
+<button onclick="window.location.href='login.html'">Click here to Login </button>
+<hr>
+<h3>New User</h3>
+<button onclick="window.location.href='register.html'">Click here to Register </button>
+<br>
+<p>
+    This site may take a moment to wake up if the server was sleeping. Thanks for your patience!
+</p>
+</body>
+</html>

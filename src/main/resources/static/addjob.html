@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="briefcase.png" type="image/png">
+    <title>Add Job</title>
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+          background: linear-gradient(to right, #4facfe, #00f2fe);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          padding: 20px;
+          color: #333;
+        }
+
+        .card {
+          background: rgba(255, 255, 255, 0.95);
+          padding: 30px 28px;
+          border-radius: 16px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+          max-width: 400px;
+          width: 100%;
+          text-align: center;
+        }
+
+        h2 {
+          font-size: 1.8rem;
+          color: #0078ff;
+          margin-bottom: 16px;
+        }
+
+        form {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"]
+        {
+          padding: 10px;
+          border-radius: 8px;
+          border: 1px solid #ccc;
+          outline: none;
+          transition: 0.3s;
+        }
+
+        input:focus {
+          border-color: #0078ff;
+          box-shadow: 0 0 0 2px rgba(0, 120, 255, 0.2);
+        }
+
+        button {
+          background: #0078ff;
+          color: white;
+          padding: 12px;
+          border: none;
+          border-radius: 8px;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: background 0.3s ease;
+        }
+
+        button:hover {
+          background: #005dc7;
+        }
+
+        @media (max-width: 500px) {
+          .card {
+            padding: 24px 20px;
+          }
+
+          h2 {
+            font-size: 1.6rem;
+          }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>Add New Job</h2>
+    <form id="jobForm">
+        <input type="text" placeholder="Enter Company" id="company" required>
+        <input type="text" placeholder="Enter Location" id="location" required>
+        <input type="text" placeholder="Enter Role" id="role" required>
+        <input type="number" placeholder="Enter Experience" id="experience" required min="0">
+        <input type="text" placeholder="Enter Link" id="link" required>
+        <button type="submit">Post Job</button>
+    </form>
+</div>
+
+<script>
+    const token = localStorage.getItem("jwt");
+
+    document.getElementById("jobForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const jobData = {
+        company: document.getElementById("company").value.trim(),
+        location: document.getElementById("location").value.trim(),
+        role: document.getElementById("role").value.trim(),
+        experience: parseInt(document.getElementById("experience").value),
+        link: document.getElementById("link").value.trim()
+      };
+
+      fetch("http://localhost:8080/jobs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(jobData)
+      })
+      .then(response => {
+        if (!response.ok) throw new Error("Failed to add job");
+        return response.json();
+      })
+      .then(data => {
+        alert("Job posted successfully!");
+        window.location.href = "jobs.html";
+      })
+      .catch(err => {
+        alert("Error: " + err.message);
+      });
+    });
+</script>
+</body>
+</html>

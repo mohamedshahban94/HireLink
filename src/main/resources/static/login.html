@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="briefcase.png" type="image/png">
+    <title>Login - HireLink</title>
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+          background: linear-gradient(to right, #4facfe, #00f2fe);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          padding: 20px;
+          color: #333;
+        }
+
+        .highlight {
+        color: #023E8A;
+        font-style: italic;
+        }
+
+        .card {
+          background: rgba(255, 255, 255, 0.95);
+          padding: 30px 28px;
+          border-radius: 16px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+          max-width: 400px;
+          width: 100%;
+          text-align: center;
+        }
+
+        h1 {
+          font-size: 2rem;
+          color: #0078ff;
+          margin-bottom: 20px;
+        }
+
+        form {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+          padding: 10px;
+          border-radius: 8px;
+          border: 1px solid #ccc;
+          outline: none;
+          transition: 0.3s;
+        }
+
+        input:focus {
+          border-color: #0078ff;
+          box-shadow: 0 0 0 2px rgba(0, 120, 255, 0.2);
+        }
+
+        input[type="submit"] {
+          background: #0078ff;
+          color: white;
+          padding: 12px;
+          border: none;
+          border-radius: 8px;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: background 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+          background: #005dc7;
+        }
+
+        #loginResponse {
+          margin-top: 12px;
+          font-size: 0.9rem;
+        }
+
+        .back-register {
+          margin-top: 10px;
+          display: inline-block;
+          font-size: 0.9rem;
+          color: #0078ff;
+          text-decoration: underline;
+          cursor: pointer;
+        }
+
+        .back-register:hover {
+          color: #005dc7;
+        }
+
+        @media (max-width: 500px) {
+          .card {
+            padding: 24px 20px;
+          }
+
+          h1 {
+            font-size: 1.6rem;
+          }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>Login to <span class="highlight">HireLink</span></h1>
+
+    <form id="loginForm">
+        <input type="email" placeholder="Enter Email" name="email" required />
+        <input type="password" placeholder="Enter Password" name="password" required />
+        <input type="submit" value="Login" />
+    </form>
+
+    <p id="loginResponse"></p>
+
+    <div class="back-register" onclick="window.location.href='register.html'">
+        New here? Register now
+    </div>
+</div>
+
+<script>
+    document.getElementById("loginForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const form = event.target;
+
+      const credentials = {
+        email: form.email.value,
+        password: form.password.value
+      };
+
+      fetch("http://localhost:8080/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials)
+      })
+      .then(response => {
+        if (!response.ok) {
+          return response.text().then(text => { throw new Error(text) });
+        }
+        return response.text();
+      })
+      .then(token => {
+        localStorage.setItem("jwt", token);
+        document.getElementById("loginResponse").innerText = "Login successful! Redirecting...";
+        document.getElementById("loginResponse").style.color = "green";
+        setTimeout(() => {
+          window.location.href = "jobs.html";
+        }, 1000);
+      })
+      .catch(error => {
+        document.getElementById("loginResponse").innerText = error.message;
+        document.getElementById("loginResponse").style.color = "red";
+      });
+    });
+</script>
+</body>
+</html>

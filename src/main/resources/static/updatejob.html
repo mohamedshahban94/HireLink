@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="briefcase.png" type="image/png">
+    <title>Update Job</title>
+    <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+          background: linear-gradient(to right, #4facfe, #00f2fe);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          padding: 20px;
+          color: #333;
+        }
+
+        .card {
+          background: rgba(255, 255, 255, 0.95);
+          padding: 30px 28px;
+          border-radius: 16px;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+          max-width: 400px;
+          width: 100%;
+          text-align: center;
+        }
+
+        h2 {
+          font-size: 1.8rem;
+          color: #0078ff;
+          margin-bottom: 16px;
+        }
+
+        form {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+
+        input[type="text"],
+        input[type="number"]
+        {
+          padding: 10px;
+          border-radius: 8px;
+          border: 1px solid #ccc;
+          outline: none;
+          transition: 0.3s;
+        }
+
+        input:focus {
+          border-color: #0078ff;
+          box-shadow: 0 0 0 2px rgba(0, 120, 255, 0.2);
+        }
+
+        button {
+          background: #0078ff;
+          color: white;
+          padding: 12px;
+          border: none;
+          border-radius: 8px;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: background 0.3s ease;
+        }
+
+        button:hover {
+          background: #005dc7;
+        }
+
+        @media (max-width: 500px) {
+          .card {
+            padding: 24px 20px;
+          }
+
+          h2 {
+            font-size: 1.6rem;
+          }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+<form id="updateForm">
+    <h2>Update Job</h2>
+    <input type="text" id="company" placeholder="Company" required>
+    <input type="text" id="location" placeholder="Location" required>
+    <input type="text" id="role" placeholder="Role" required>
+    <input type="number" id="experience" placeholder="Experience (in years)" required min="0">
+    <input type="text" id="link" placeholder="Apply Link" required>
+    <button type="submit">Update Job</button>
+</form>
+</div>
+<script>
+    const token = localStorage.getItem("jwt");
+    const params = new URLSearchParams(window.location.search);
+    const jobId = params.get("id");
+
+    if (!jobId) {
+      alert("No job ID found in URL.");
+      window.location.href = "jobs.html";
+    }
+
+    // Fetch job details
+    fetch(`http://localhost:8080/jobs/${jobId}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Failed to fetch job details.");
+      return res.json();
+    })
+    .then(job => {
+      document.getElementById("company").value = job.company;
+      document.getElementById("location").value = job.location;
+      document.getElementById("role").value = job.role;
+      document.getElementById("experience").value = job.experience;
+      document.getElementById("link").value = job.link;
+    })
+    .catch(err => {
+      alert(err.message);
+      window.location.href = "jobs.html";
+    });
+
+    // Update job on submit
+    document.getElementById("updateForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const updatedJob = {
+        company: document.getElementById("company").value.trim(),
+        location: document.getElementById("location").value.trim(),
+        role: document.getElementById("role").value.trim(),
+        experience: parseInt(document.getElementById("experience").value),
+        link: document.getElementById("link").value.trim()
+      };
+
+      fetch(`http://localhost:8080/jobs/${jobId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedJob)
+      })
+      .then(res => {
+        if (res.ok) {
+          alert("Job updated successfully.");
+          window.location.href = "jobs.html";
+        } else {
+          throw new Error("Failed to update job.");
+        }
+      })
+      .catch(err => {
+        alert(err.message);
+      });
+    });
+</script>
+</body>
+</html>
