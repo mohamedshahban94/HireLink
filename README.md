@@ -108,8 +108,8 @@ Visit the live app: [https://hirelink-code.onrender.com](https://hirelink-code.o
 
 ## 📸 Screenshots
 
-### 🔐  PageHome
-![Login Page](screenshots/home.png)
+### 🔐  Home
+![Home Page](screenshots/home.png)
 
 ### 🔐 Login Page
 ![Login Page](screenshots/login.png)
